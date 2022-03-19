@@ -3,7 +3,7 @@
 # Controls family state (Working, vacation, etc.)
 #
 # TODO: Read vacation plans from calendar
-#
+# TODO: Add support for other non-working days, based on country or other external source.. Or also get from calendar?
 
 import hassapi as hass
 from datetime import datetime

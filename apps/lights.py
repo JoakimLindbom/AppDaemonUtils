@@ -2,8 +2,6 @@ import hassapi as hass
 from follow import followers
 import globals as g
 from globals import *
-#ON = "on"
-#OFF = "off"
 
 class Follower(hass.Hass):
     """
