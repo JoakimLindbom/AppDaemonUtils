@@ -76,3 +76,19 @@ class TestFollow(unittest.TestCase):
         x = self.f.get_followers("a1")
         self.assertIsInstance(x, list)
         self.assertEqual(x, ["l1", "l2"])
+
+    @unittest.skip("Not yet fully implemented")
+    def test_AddColourMode(self):
+        self.f.add_follower("l1", "a1")
+        self.addColourMode("l1", "ColourTemp")
+        colour, dimmable = self.f.get_light_attr("l1")
+        self.assertEqual(colour, "ColourTemp")
+        self.assertIs(dimmable, None)
+
+    @unittest.skip("Not yet fully implemented")
+    def test_AddDimmable(self):
+        self.f.add_follower("l1", "a1")
+        self.setDimmable("l1", True)
+        colour, dimmable = self.f.get_light_attr("l1")
+        self.assertEqual(colour, "OnOff")
+        self.assertIs(dimmable, True)

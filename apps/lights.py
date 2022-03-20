@@ -35,6 +35,10 @@ class Follower(hass.Hass):
                     self.target = t
                     self.follow.add_follower(t, self.origin)
 
+                    # test
+                    a = self.get_state(t, attribute="all")
+                    print(f"state: {t}: {x}")
+
                 self.listen_state(self.on_off_handler, self.origin)
                 self.enitity = self.get_entity(self.origin)
                 self.enitity.listen_state(self.brightness_handler, attribute="brightness")

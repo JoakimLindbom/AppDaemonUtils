@@ -6,6 +6,7 @@ class followers():
     """
     def __init__(self):
         self.f = []
+        self.lights = []
 
     def add_follower(self, light, light_to_follow):
         for l in self.f:
@@ -23,6 +24,12 @@ class followers():
             self.f.append(a)
         return True
 
+    def get_light_attr(self, light):
+        for l in self.lights:
+            if l == light:
+                return l["colour_mode"], l["dimmable"]
+
+        return None, None
 
     def get_followers(self, light):
         for l in self.f:
