@@ -12,8 +12,12 @@ __email__      = 'Joakim.Lindbom@gmail.com'
 __status__     = "Experimental"
 __version__    = "0.0.1"
 #################################################################
-
-import hassapi as hass
+try:
+    import hassapi as hass
+    __HASS_DEFINED = True
+except ModuleNotFoundError:
+    print("Running outside of HA, some parts will not work")
+    __HASS_DEFINED = False
 from datetime import datetime, timedelta
 
 # General utilities
@@ -24,10 +28,18 @@ def return_list(list_or_single):
     else:
         return [list_or_single]
 
+def remove_list_from_list(full_list, remove_list):
+    for l in remove_list:
+        try:
+            full_list.remove(l)
+        except ValueError:
+            pass  # Ignore if missing
 
-class Utilities(hass.Hass):
-    def initialize(self):
-        return
+    return full_list
+
+#class Utilities(hass.Hass):
+#    def initialize(self):
+#        return
 
 class Util():
     def initialize(self):
@@ -37,7 +49,7 @@ class Util():
         """
         :param duration: How long duration, expressed as HH:MM:MM, e.g. 00:20:00 for 20 minutes
         :param steps: How many steps to split into
-        :return: list of timestamps
+        :return: list of timestamps and corresponding brightness levels
         """
         tm_list = []
         br_list = []
@@ -66,58 +78,33 @@ class Util():
         print (f"time {time}, sunrise {sunrise}")
 
 
-class SchedulerItem:
-    def __iter__(self):
-        pass
-
-
-class SchedulerItemIterator:
-    '''Iterator for SchedulerItem
-    '''
-    def __init__(self):
-        self._si = SchedulerItem
-        self._index = 0
-
-    def __next__(self):
-        if self._index < (len(self._si)):
-            result = (self._si[self._index])
-            self._index += 1
-            return result
-        raise StopIteration
-
-class Scheduler:
-    def __init__(self):
-        pass
-
-    def addDict (self, dict):
-        pass
-
 
 def truncate(n):
     return int(n * 100000) / 100000
 
 
-class Fader(hass.Hass):
-    def __init__(self, ad, name, logging, args, config, app_config, global_vars):
-        pass
+if __HASS_DEFINED:
+    class Fader(hass.Hass):
+        def __init__(self, ad, name, logging, args, config, app_config, global_vars):
+            pass
 
-    def initialize(self):
-        self.handlers = []
-        self.remote = None
-        self.break_remote = None
+        def initialize(self):
+            self.handlers = []
+            self.remote = None
+            self.break_remote = None
 
-        self.set_log_level("DEBUG")
+            self.set_log_level("DEBUG")
 
-        try:
-            self.retry = self.args["retry"].lower() == "true"
+            try:
+                self.retry = self.args["retry"].lower() == "true"
+                self.log(f"--- Retry: {self.retry}", level="DEBUG")
+            except KeyError:
+                self.retry = False
             self.log(f"--- Retry: {self.retry}", level="DEBUG")
-        except KeyError:
-            self.retry = False
-        self.log(f"--- Retry: {self.retry}", level="DEBUG")
 
-        try:
-            self.retrytimes = self.args["retrytimes"]
+            try:
+                self.retrytimes = self.args["retrytimes"]
+                self.log(f"--- Retry times: {self.retrytimes}", level="DEBUG")
+            except KeyError:
+                self.retrytimes = 3
             self.log(f"--- Retry times: {self.retrytimes}", level="DEBUG")
-        except KeyError:
-            self.retrytimes = 3
-        self.log(f"--- Retry times: {self.retrytimes}", level="DEBUG")

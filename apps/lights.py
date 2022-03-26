@@ -37,7 +37,7 @@ class Follower(hass.Hass):
 
                     # test
                     a = self.get_state(t, attribute="all")
-                    print(f"state: {t}: {x}")
+                    print(f"state: {t}: {a}")
 
                 self.listen_state(self.on_off_handler, self.origin)
                 self.enitity = self.get_entity(self.origin)
