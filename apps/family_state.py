@@ -3,12 +3,12 @@
 # Controls family state (Working, vacation, etc.)
 #
 # TODO: Read vacation plans from calendar
-# TODO: Add support for other non-working days, based on country or other external source.. Or also get from calendar?
+
 
 import hassapi as hass
 from datetime import datetime
 from globals import *
-
+from scheduler import Scheduler
 
 class FamilyStateController(hass.Hass):
     """
@@ -45,15 +45,23 @@ class FamilyStateController(hass.Hass):
     def check_weekday(self, kwargs):
         self.log("Setting family state based on weekday")
         family_state = self.get_state(self.input_select)
-        self.log(f"Current state: {family_state}")
+        self.log(f"Current state: {family_state}", level="DEBUG")
         if family_state != VACATION:
-            day = datetime.today().weekday()  # TODO: self.datetime
-            if day >= 5:
-                self.log("It's week-end!")
+            sch = Scheduler()
+            if sch.check_nonworkingday():
+                self.log("It's week-end or holiday!")
                 self.select_option(self.input_select, NON_WORKING)
             else:
                 self.log("It's work day")
                 self.select_option(self.input_select, WORKING)
+
+            # day = datetime.today().weekday()  # TODO: self.datetime
+            # if day >= 5:
+            #     self.log("It's week-end!")
+            #     self.select_option(self.input_select, NON_WORKING)
+            # else:
+            #     self.log("It's work day")
+            #     self.select_option(self.input_select, WORKING)
         family_state = self.get_state(self.input_select)
         self.log(f"New state: {family_state}", level="DEBUG")
 

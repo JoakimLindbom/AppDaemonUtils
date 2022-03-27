@@ -1,6 +1,9 @@
 from time import mktime, gmtime
 from datetime import datetime
 
+from datetime import date
+from workalendar.europe import Sweden
+
 class SchedulerItem:
     def __init__(self, time, operation, entities):
 
@@ -9,15 +12,18 @@ class SchedulerItem:
             self._operation = operation
         else:
             raise ValueError
-        self._hour = self._time[0:2]
-        self._minute = self._time[3:5]
-        self._sec = self._time[6:8]
+        self._hour = int(self._time[0:2])
+        self._minute = int(self._time[3:5])
+        self._sec = int(self._time[6:8])
 
         self._entities = entities
 
         now = datetime.now()
-        if True:  # Check is time has passed for today
-            t = (now.year, now.month, now.day, int(self._hour), int(self._minute), int(self._sec), now.timetuple().tm_wday, now.timetuple().tm_yday, now.timetuple().tm_isdst)
+        if self._hour >= now.hour and self._minute >= now.minute:  # Check if time has passed for today
+            pass  # tomorrow - add 24*60*60 to epoch?? What about DST?
+        else:
+            t = (now.year, now.month, now.day, int(self._hour), int(self._minute), int(self._sec),
+                 now.timetuple().tm_wday, now.timetuple().tm_yday, now.timetuple().tm_isdst)
             self._next = mktime(t)
 
     def __str__(self):
@@ -57,8 +63,20 @@ class SchedulerItemsIterator:
 
 class Scheduler:
     def __init__(self):
-        pass
+        now = datetime.now()
+        cal = Sweden()
+        self.holidays = cal.holidays(now.year)
 
     def add_dict (self, dict):
         pass
 
+    def check_nonworkingday(self) -> bool:
+        now = datetime.now()
+        if now.weekday() in [5, 6]:  # Weekend
+            return True
+
+        for h in self.holidays:
+            if h[0].month == now.month and h[0].day == now.day:
+                return True
+
+        return False
