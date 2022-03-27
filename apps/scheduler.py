@@ -70,6 +70,7 @@ class Scheduler:
     def add_dict (self, dict):
         pass
 
+    # TODO: Check All saints day 2022-11-05 - bug?
     def check_nonworkingday(self) -> bool:
         now = datetime.now()
         if now.weekday() in [5, 6]:  # Weekend
