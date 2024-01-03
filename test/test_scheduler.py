@@ -33,18 +33,18 @@ class TestScheduler1(unittest.TestCase):
                 self.assertEqual(s1._entities, lights_panels)
             i += 1
 
-    def test_si_iterator(self):
+    def test_reiterate(self):
         for s1 in self.s:
             print(s1)
 
         i = 0
-        reiterate = False
+        reiterated = False
         for s1 in self.s:
             print(s1)
             if i == 1:
-                reiterate = True
+                reiterated = True
             i += 1
-        self.assertEqual(reiterate, True)  # Proving you can reiterate
+        self.assertEqual(reiterated, True)  # Proving you can re-iterate
 
 class TestScheduler_tomorrow(unittest.TestCase):
     @time_machine.travel(dt.datetime(2022, 4, 2, 10, 15, 0, tzinfo=ZoneInfo("Europe/Stockholm")))
@@ -64,6 +64,59 @@ class TestScheduler_tomorrow(unittest.TestCase):
             t3 = mktime(t2)
             self.assertEqual(t3, s1._next)
             i += 1
+
+class TestScheduler_sorting(unittest.TestCase):
+    @time_machine.travel(dt.datetime(2022, 4, 2, 10, 15, 0, tzinfo=ZoneInfo("Europe/Stockholm")))
+    def test_sorted1(self):
+        self.sch = Scheduler()
+        self.sch.add("10:00", "ON", lights_panels)
+        self.sch.add("22:00:00", "OFF", lights_panels)
+
+        self.sch.set_sort_order("C")  # Calendar, i.e. actual time
+        i = 0
+        for s1 in sorted(self.sch.sis):
+            print(s1)
+            self.assertEqual("10:00:00" if i == 1 else "22:00:00", s1._time)
+            i += 1
+
+    @time_machine.travel(dt.datetime(2022, 4, 2, 9, 0, 0, tzinfo=ZoneInfo("Europe/Stockholm")))
+    def test_sorted2(self):
+        self.sch = Scheduler()
+        self.sch.add("10:00", "ON", lights_panels)
+        self.sch.add("22:00:00", "OFF", lights_panels)
+
+        self.sch.set_sort_order("C")  # Calendar, i.e. actual time
+        i = 0
+        for s1 in sorted(self.sch.sis):
+            print(s1)
+            self.assertEqual("10:00:00" if i == 0 else "22:00:00", s1._time)
+            i += 1
+
+    def test_sorted_wrong_option(self):
+        self.sch = Scheduler()
+        self.assertRaises(ValueError, self.sch.set_sort_order, "D")
+
+    @time_machine.travel(dt.datetime(2022, 4, 2, 10, 15, 0, tzinfo=ZoneInfo("Europe/Stockholm")))
+    def test_sorted_order(self):
+        self.sch = Scheduler()
+        self.sch.add("10:00", "ON", lights_panels)
+        self.sch.add("22:00:00", "OFF", lights_panels)
+
+        self.sch.set_sort_order("C")  # Calendar, i.e. actual time
+        i = 0
+        for s1 in sorted(self.sch.sis):
+            print(s1)
+            self.assertEqual("10:00:00" if i == 1 else "22:00:00", s1._time)
+            i += 1
+
+        self.sch.set_sort_order("T")  # Time of day
+        i = 0
+        for s1 in sorted(self.sch.sis):
+            print(s1)
+            t3 = "10:00:00" if i == 0 else "22:00:00"
+            self.assertEqual(t3, s1._time)
+            i += 1
+
 
 
 class TestScheduler_nonworkingdays(unittest.TestCase):

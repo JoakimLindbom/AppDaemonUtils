@@ -2,6 +2,7 @@
 #
 # Global constants and Ids
 #
+#TODO: Update with new input_selects
 
 import hassapi as hass
 

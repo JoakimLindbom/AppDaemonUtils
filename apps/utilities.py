@@ -20,6 +20,11 @@ except ModuleNotFoundError:
     __HASS_DEFINED = False
 from datetime import datetime, timedelta
 
+class Utilities(hass.Hass):
+    def initialize(self):
+        self.log("Utilities loaded")
+
+
 # General utilities
 def return_list(list_or_single):
     """ Returns a list, regardless if inpout is list of single instance"""
