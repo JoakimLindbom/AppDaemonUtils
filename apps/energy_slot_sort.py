@@ -57,7 +57,7 @@ class energy_slot_sort(hass.Hass):
         handle = self.run_daily(self.create_evening_night_sensors, "13:30:10")
         handle = self.run_daily(self.create_morning_evening_sensors, "00:00:07")
         handle = self.run_daily(self.create_24h_sensors, "00:00:05")
-        self.create_evening_night_sensors(1) # parameter added as a workaround for kwargs missing
+        self.create_evening_night_sensors(1)  # parameter added as a workaround for kwargs missing
         self.create_morning_evening_sensors(1)
         self.create_24h_sensors(1)
 
@@ -88,7 +88,7 @@ class energy_slot_sort(hass.Hass):
         i = 0
         price_lst = []
         for item in prices:
-            price = float('{:.0f}'.format(item["value"]))  # TODO: Will need some guardrail against bad or missing data
+            price = float('{:.1f}'.format(item["value"]))  # TODO: Will need some guardrail against bad or missing data
             price_lst.append({"hour": i, "price": price, "start": item["start"]})
             i += 1
         return price_lst
